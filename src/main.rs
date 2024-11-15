@@ -1,26 +1,51 @@
 mod models;
 
 use std::collections::HashSet;
+use std::sync::{Arc, Mutex};
+use std::thread;
 use std::fs::File;
 use std::io::{BufReader, BufRead};
 use crate::models::{Event, EventType, RegistrationData, SessionPingData, MatchData};
 use serde_json::from_str;
 
+const THREAD_NUM: usize = 4;
+
 pub fn process_events(file_path: &str) {
     let file = File::open(file_path).expect("Could not open a file.");
     let reader = BufReader::new(file);
-    let mut unique_event_id = HashSet::new();
 
-    for line in reader.lines() {
-        let line = line.expect("Could not read line.");
-        if let Ok(event) = from_str::<Event>(&line) {
-            if unique_event_id.insert(event.event_id) {
-                println!("Processing event: {:?}", event);
-                handle_event(&event);
-            } else {
-                println!("Err: FOUND DUPLICATE {:?}", event.event_id);
+    let lines: Vec<String> = reader.lines()
+        .map(|line| line.expect("Could not read line."))
+        .collect();
+
+    let mut unique_event_id = Arc::new(Mutex::new(HashSet::new()));
+    let chunk_size = (lines.len() + THREAD_NUM - 1) / THREAD_NUM;
+
+    let mut handles = vec![];
+
+    for chunk in lines.chunks(chunk_size) {
+        let chunk = chunk.to_vec();
+        let unique_event_id = Arc::clone(&unique_event_id);
+
+        let handle = thread::spawn(move || {
+            for line in chunk {
+                if let Ok(event) = from_str::<Event>(&line) {
+                    let mut unique_event_id = unique_event_id.lock().unwrap();
+                    if unique_event_id.insert(event.event_id) {
+                        println!("Processing event: {:?}", event);
+                        handle_event(&event);
+                    } else {
+                        println!("ERR: Found Duplicate Event {:?}", event.event_id);
+                    }
+                }
             }
-        }
+        });
+
+        handles.push(handle)
+    }
+
+    for handle in handles {
+        handle.join().expect("Thread panicked.");
     }
 }
 
@@ -58,7 +83,6 @@ fn handle_registration(data: RegistrationData) {
 }
 fn handle_session_ping(data: SessionPingData) { 
     println!("SessionPingData: {:?}", data);
-
 }
 
 fn handle_match(data: MatchData) {
