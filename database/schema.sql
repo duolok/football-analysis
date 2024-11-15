@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS registrations CASCADE;
+DROP TABLE IF EXISTS sessions CASCADE;
+DROP TABLE IF EXISTS matches CASCADE;
+
 CREATE TABLE registrations (
     user_id TEXT PRIMARY KEY,
     country TEXT NOT NULL,
