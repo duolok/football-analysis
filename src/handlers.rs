@@ -1,4 +1,6 @@
-use crate::models::{Event, EventType, RegistrationData, SessionPingData, MatchData};
+use crate::models::{Event, EventType, RegistrationData, SessionPingData, MatchData,
+                    UserStatsRequest, UserLevelStats, GameStatsRequest, GameLevelStats
+};
 
 use serde_json::from_str;
 use sqlx::{PgPool, query};
@@ -115,3 +117,5 @@ async fn handle_match(data: MatchData, pool: &PgPool, timestamp: i64) -> Result<
     .await?;
     Ok(())
 }
+
+
