@@ -39,15 +39,26 @@ pub struct MatchData {
     pub away_goals_scored: Option<i32>,
 }
 
+#[derive(Deserialize)]
+pub struct UserStatsRequest {
+    pub user_id: String,
+    pub date: Option<String>,
+}
+
 #[derive(Serialize)]
 pub struct UserLevelStats {
     pub country: String,
     pub registration_datetime: String,
-    pub days_since_lasat_login: i64,
+    pub days_since_last_login: i64,
     pub session_count: i64,
     pub game_time: i64,
     pub match_points: i64,
-    pub match_time_percentage: i64,
+    pub match_time_percentage: f64,
+}
+
+#[derive(Deserialize)]
+pub struct GameStatsRequest {
+    pub date: Option<String>,
 }
 
 #[derive(Serialize)]
