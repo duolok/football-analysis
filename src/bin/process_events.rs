@@ -1,5 +1,4 @@
 use football_analysis::handlers;
-use football_analysis::validation;
 use dotenv::dotenv;
 use sqlx::PgPool;
 use std::sync::Arc;
