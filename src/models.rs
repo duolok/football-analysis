@@ -1,4 +1,4 @@
-use serde::{Deserialize};
+use serde::{Serialize, Deserialize};
 use serde_json::Value;
 
 #[derive(Debug, Deserialize)]
@@ -37,4 +37,23 @@ pub struct MatchData {
     pub away_user_id: String,
     pub home_goals_scored: Option<i32>,
     pub away_goals_scored: Option<i32>,
+}
+
+#[derive(Serialize)]
+pub struct UserLevelStats {
+    pub country: String,
+    pub registration_datetime: String,
+    pub days_since_lasat_login: i64,
+    pub session_count: i64,
+    pub game_time: i64,
+    pub match_points: i64,
+    pub match_time_percentage: i64,
+}
+
+#[derive(Serialize)]
+pub struct GameLevelStats {
+    pub daily_active_users: i64,
+    pub session_count: i64,
+    pub avg_sessions: f64,
+    pub top_users: Vec<String>,
 }
