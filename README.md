@@ -26,7 +26,15 @@ Use Docker Compose to set up and start the PostgreSQL database. Run the followin
 ```bash
 docker-compose up -v
 ```
-#### Step 2: Process Events
+
+#### Step 2: Init Tables
+Run this script to init tables: 
+
+```bash
+./init_tables.sh
+```
+
+#### Step 3: Process Events
 
 To process the events from the input dataset (e.g., `events.jsonl`) and populate the database, run:
 
